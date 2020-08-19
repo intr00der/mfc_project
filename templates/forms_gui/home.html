@@ -1,0 +1,10 @@
+{% extends "forms_gui/base.html" %}
+
+{% block content %}
+    <p>HELLO WORLD</p>
+
+    {% for item in formbodies %}
+        <a href="#">{{ item.title }}</a>
+    {% endfor %}
+
+{% endblock %}
