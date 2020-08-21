@@ -1,12 +1,16 @@
 {% extends "forms_gui/base.html" %}
 
+{% block title %} {{ button_title }} {% endblock %}
+
 {% block content %}
 	<div class="container">
 		<p class="h1">МФЦ</p>
 	</div>
 
 	<div class="container">
-		<p class="h4">МНОГОФУНКЦИОНАЛЬНЫЙ ЦЕНТР</p>
+		<p class="h4">
+			{{ button_title }}
+		</p>
 	</div>
 
     {% for button in buttons %}
