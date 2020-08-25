@@ -3,17 +3,11 @@ body {
 }
 
 
-.h1 {
+.button-title {
     font-weight: bold;
     padding: 10px;
     text-align: center;
 
-}
-
-.h4 {
-    color: #909090;
-    font-weight: normal;
-    text-align: center;
 }
 
 .btn-toolbar .btn {

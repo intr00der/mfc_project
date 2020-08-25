@@ -4,25 +4,18 @@
 
 {% block content %}
 	<div class="container">
-		<p class="h1">МФЦ</p>
-	</div>
-
-	<div class="container">
-		<p class="h4">
-			{{ button_title }}
+		<p class="h2 button-title">
+			{{button_title}}
 		</p>
 	</div>
 
     {% for button in buttons %}
-	<div class="btn-toolbar	">
-			<a class="btn btn-primary"  href=
-				 '{% if button.children.all %}
-					{% url "form-button" button.id %}
-				 {% else %}
-					{% url "form-body" form_id=button.form_body.id button_id=button.id %}
-				 {% endif %}'>
-				{{ button.title }}
-			</a>
+	<div class="btn-toolbar">
+		{% if button.children.all %}
+			<a class="btn btn-primary" href="{% url 'form-button' button.id %}">{{ button.title }}</a>
+		{% else %}
+			<a class="btn btn-primary" href="{% url 'form-body' form_id=button.form_body.id button_id=button.id %}">{{ button.form_body.title }}</a>
+		{% endif %}
 	</div>
 	{% endfor %}
 
