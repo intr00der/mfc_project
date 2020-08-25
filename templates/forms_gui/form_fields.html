@@ -2,8 +2,55 @@
 
 {% block content %}
 
+    <p class="h2">{{ form_body_title }}</p>
 
-    <p>{{ context }}</p>
+    <!-- ['text', 'radio', 'dropdown', 'date', 'checkbox'] -->
+    <form method='POST'>
+    {% for form_field in form_fields %}
+
+
+        {% if form_field.type == 'dropdown' %}
+        <div class="dropdown mb-3">
+            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                              id="dropdownMenuButton"
+                                                              data-toggle="dropdown"
+                                                              aria-haspopup="true"
+                                                              aria-expanded="false">
+                {{ form_field.title }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% for item in form_field.data_as_list %}
+                    <a class="dropdown-item" type="button">{{ item }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% elif form_field.type == 'checkbox' %}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <p>{{ form_field.title }}</p>
+                    {% for item in form_field.data_as_list %}
+                        <input type="checkbox" name="{{ item }}" value="{{ item }}">
+                        <label for="{{ item }}" >{{ item }}</label><br>
+                    {% endfor %}
+            </div>
+        </div>
+
+        {% elif form_field.type == 'radio' %}
+        <div class="input-group mb-3">
+        <p>{{ form_field.title }}</p>
+            {% for item in form_field.data_as_list %}
+                <input type="radio" name="single-choice-radio" value="{{ item }}">
+                <label for="{{ item }}" >{{ item }}</label><br>
+            {% endfor %}
+        </div>
+
+
+
+        {% endif %}
+
+    </form>
+    {% endfor %}
 
 
 
