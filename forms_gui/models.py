@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
 
 
@@ -11,7 +12,7 @@ class FormField(models.Model):
 
     title = models.CharField('Название поля', max_length=255)
     type = models.CharField('Тип поля', max_length=31, choices=FORM_TYPE_CHOICES)
-    data = models.TextField('Тело формы', blank=True, null=True)  # Для radio, dropdown
+    data = models.TextField('Тело формы', blank=True, null=True)  # Для radio, dropdown, checkbox
     details = models.CharField('Поясняющий текст', max_length=255, blank=True, null=True)
     required = models.BooleanField('Обязательное ли поле', default=False)
 
@@ -65,3 +66,9 @@ class FormButton(MPTTModel):
 
     def __str__(self):
         return self.title or ''
+
+
+class UsersRequest(models.Model):
+    data = JSONField('Данные пользователя')
+    form_body = models.ForeignKey(FormBody, on_delete=models.SET_NULL, related_name='users_request', null=True)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True, blank=False)

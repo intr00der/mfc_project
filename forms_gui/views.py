@@ -1,7 +1,13 @@
 import os
 
-from .models import FormButton, FormBody, FormField
+from django.conf import settings
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+
+from .models import FormButton, FormBody, FormField, UsersRequest
 from django.views.generic import ListView
+from django.core.mail import EmailMessage
 
 
 class ButtonMixin:
@@ -32,17 +38,6 @@ class ButtonView(ButtonMixin, ListView):
 
 class FormBodyView(ListView):
     template_name = os.path.join('forms_gui', 'form_fields.html')
-    context_object_name = 'form_bodies'
-    queryset = FormBody.objects.all()
-
-    def get_queryset(self):
-        return super().get_queryset().filter(
-            id=self.kwargs['form_id']
-        )
-
-
-class FormBodyView(ListView):
-    template_name = os.path.join('forms_gui', 'form_fields.html')
     context_object_name = 'form_fields'
     queryset = FormField.objects.all()
 
@@ -53,5 +48,33 @@ class FormBodyView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['form_body_title'] = FormBody.objects.get(pk=self.kwargs['form_id'])
+        context['form_body_title'] = FormBody.objects.get(pk=self.kwargs['form_id']).title
         return context
+
+    def post(self, request, *args, **kwargs):
+        data = self.prepare_post_data(request.POST)
+        form = FormBody.objects.get(pk=self.kwargs['form_id'])
+        required_fields = form.form_fields.filter(required=True).values_list('id', flat=True)
+        data_keys = set(map(int, {*data.keys()}))
+        if data_keys != {*required_fields}:
+            return HttpResponseBadRequest('Не меняйте код элемента')
+        UsersRequest.objects.create(data=data, form_body_id=kwargs['form_id'])
+        mail = 'ya.ne.kuryu@gmail.com'
+        subject = 'МФЦ Сервис'
+        message = 'Новые данные по заполнению форм: ' + str(data)
+        email_from = settings.DEFAULT_EMAIL_FROM
+        msg = EmailMessage(subject, message, email_from, [mail])
+        msg.send()
+        return HttpResponseRedirect(reverse('success'))
+
+    @staticmethod
+    def prepare_post_data(data):
+        data = dict(data)
+        del data['consent']
+        del data['approval']
+        del data['csrfmiddlewaretoken']
+        return {key: value[0] for key, value in data.items()}
+
+
+def success_page(request):
+    return render(request, template_name='forms_gui/success.html')

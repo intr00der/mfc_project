@@ -18,7 +18,7 @@ class FormButtonForm(forms.ModelForm):
         if not title:
             if not form_body and not parent:
                 raise forms.ValidationError(
-                    'Должнен быть указан "Заголовок группы", либо "К какой группе относится", '
+                    'Должен быть указан "Заголовок группы", либо "К какой группе относится", '
                     'либо "К какой справке ведет"'
                 )
             if parent:

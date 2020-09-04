@@ -1,57 +1,146 @@
 {% extends "forms_gui/base.html" %}
 
+{% block title %} {{ form_body_title }} {% endblock %}
+
 {% block content %}
 
-    <p class="h2">{{ form_body_title }}</p>
+    <p class="h2 form-body-title">{{ form_body_title }}</p>
 
     <!-- ['text', 'radio', 'dropdown', 'date', 'checkbox'] -->
-    <form method='POST'>
+    <form class="form" method='POST'>
+    {% csrf_token %}
     {% for form_field in form_fields %}
 
-
         {% if form_field.type == 'dropdown' %}
-        <div class="dropdown mb-3">
-            <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                              id="dropdownMenuButton"
-                                                              data-toggle="dropdown"
-                                                              aria-haspopup="true"
-                                                              aria-expanded="false">
-                {{ form_field.title }}
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <div class="dropdown">
+            <p class="h5">{{ form_field.title }}</p>
+            <p class="text-muted">{{ form_field.details }}</p>
+
+            <select name="{{ form_field.id }}"
+                    class="custom-select"
+                    id="inputGroupSelect"
+                    required="{{ form_field.required }}"
+            >
+                <option selected value disabled>Выберите опцию...</option>
                 {% for item in form_field.data_as_list %}
-                    <a class="dropdown-item" type="button">{{ item }}</a>
+                <option value="{{ item }}">{{ item }}</option>
                 {% endfor %}
-            </div>
+            </select>
         </div>
+
+<!--        <p class="h5">{{ form_field.title }}</p>-->
+<!--        <p class="text-muted">{{ form_field.details }}</p>-->
+<!--        <div class="dropdown">-->
+<!--            <button-->
+<!--                class="btn btn-primary dropdown-toggle"-->
+<!--                type="button"-->
+<!--                id="dropdownMenuButton"-->
+<!--                data-toggle="dropdown"-->
+<!--                aria-haspopup="true"-->
+<!--                aria-expanded="false"-->
+<!--            >-->
+<!--                <span>Выберите опцию</span>-->
+<!--            </button>-->
+<!--            <div class="dropdown-menu">-->
+<!--                {% for item in form_field.data_as_list %}-->
+<!--                    <a class="dropdown-item" type="button">{{ item }}</a>-->
+<!--                {% endfor %}-->
+<!--            </div>-->
+<!--        </div>-->
 
         {% elif form_field.type == 'checkbox' %}
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <p>{{ form_field.title }}</p>
-                    {% for item in form_field.data_as_list %}
-                        <input type="checkbox" name="{{ item }}" value="{{ item }}">
-                        <label for="{{ item }}" >{{ item }}</label><br>
-                    {% endfor %}
-            </div>
+        <div class="checkbox-flex">
+            <p class="h5">{{ form_field.title }}</p>
+            <p class="text-muted">{{ form_field.details }}</p>
+                {% for item in form_field.data_as_list %}
+                    <div class="checkbox" >
+                        <div>
+                            <label for="{{ item }}" >
+                                <span>{{ item }}</span>
+                                <div class="super-background"></div>
+                            </label>
+                             <input
+                                class="checkbox-input"
+                                type="checkbox"
+                                name="{{ form_field.id }}"
+                                value="{{ item }}"
+                                id="{{ item }}"
+                             >
+                        </div>
+                    </div>
+                {% endfor %}
         </div>
 
+
         {% elif form_field.type == 'radio' %}
-        <div class="input-group mb-3">
-        <p>{{ form_field.title }}</p>
+        <p class="h5">{{ form_field.title }}</p>
+        <p class="text-muted">{{ form_field.details }}</p>
+        <div class="radio-flex">
             {% for item in form_field.data_as_list %}
-                <input type="radio" name="single-choice-radio" value="{{ item }}">
-                <label for="{{ item }}" >{{ item }}</label><br>
+                <div class="radio" >
+                    <label for="{{ item }}" >{{ item }}</label>
+                    <input
+                        class="radio-input"
+                        type="radio"
+                        name="{{ form_field.id }}"
+                        id="{{ item }}"
+                        value="{{ item }}"
+                        required="{{ form_field.required }}"
+                    >
+                </div>
             {% endfor %}
         </div>
 
+        {% elif form_field.type == 'text' %}
+        <div class="text-field">
+            <p class="h5">{{ form_field.title }}</p>
+            <p class="text-muted">{{ form_field.details }}</p>
+            <input name="{{ form_field.id }}"
+                   type="text"
+                   placeholder="{{ form_field.data }}"
+                   required="{{ form_field.required }}"
+            >
+        </div>
 
-
+        {% elif form_field.type == 'date' %}
+        <div class="date-field">
+            <p class="h5">{{ form_field.title }}</p>
+            <p class="text-muted">{{ form_field.details }}</p>
+            <input name="{{ form_field.id }}"
+                   data-date-language="ru"
+                   id="datepicker"
+                   data-provide="datepicker"
+                   type="text"
+                   class="date-field form-control"
+                   required="{{ form_field.required }}"
+            >
+        </div>
         {% endif %}
 
-    </form>
     {% endfor %}
 
 
+        <label for="consent">
+            <input type="checkbox"
+                   id="consent"
+                   name="consent"
+                   required="true">
+            ДАЮ СВОЕ СОГЛАСИЕ на обработку персональных данных
+        </label>
 
+        <label for="approval">
+            <input type="checkbox"
+                   id="approval"
+                   name="approval"
+                   required="true"
+            >
+            ПОДТВЕРЖДАЮ правильность и корректность введенных данных
+        </label>
+
+        <input class="btn btn-primary final-submit"
+               type="submit"
+               value="Отправить"
+        >
+
+    </form>
 {% endblock %}
