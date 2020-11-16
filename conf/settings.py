@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-
 import environ
 
 env = environ.Env()
@@ -23,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mptt',
     'forms_gui',
+    'easy_pdf',
 ]
 
 MIDDLEWARE = [
@@ -37,11 +37,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'conf.urls'
 
+DIRNAME = os.path.abspath(os.path.dirname(__file__))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(DIRNAME, 'templates')
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,7 +68,7 @@ if 'POSTGRES_DB' in os.environ:
             'USER': env('POSTGRES_USER'),
             'PASSWORD': env('POSTGRES_PASSWORD'),
             'HOST': env('POSTGRES_HOST'),
-            'PORT': env('POSTGRES_PORT')
+            'PORT': env('POSTGRES_PORT'),
         }
     }
 elif 'MYSQL_DB' in os.environ:
@@ -118,17 +122,26 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+USER_REQUESTS_URL = '/user_requests/'
+USER_REQUESTS_ROOT = os.path.join(BASE_DIR, 'user_requests')
+
+USER_REQUESTS_TEMPORARY_ROOT = os.path.join(USER_REQUESTS_ROOT, 'user_requests_temporary')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'mfcenter.service@gmail.com'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 DEFAULT_EMAIL_FROM = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = 'mf1357center'
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
+MESSAGE_PATH = 'forms_gui/static/forms_gui/messages/'
 

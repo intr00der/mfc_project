@@ -14,11 +14,12 @@ body {
 
 }
 
-.btn-primary {
+.btn-primary, .btn-success {
     text-align: center;
     border-radius: 10px;
     min-width: 50%;
     font-size: 20px;
+    margin-bottom: 50px;
 
 }
 
@@ -27,14 +28,13 @@ body {
     justify-content: center;
 }
 
-.radio-title {
-    text-align: center;
-}
 
-.radio-flex {
+
+.radio-flex, .checkbox-flex {
     display: flex;
     flex-direction: column;
     width: 100%;
+    align-items: center;
 }
 
 .radio-flex .radio label {
@@ -42,16 +42,9 @@ body {
     background: #DDD;
     border-radius: 4px;
     cursor: pointer;
-    margin: 5px 0;
     border: 1px solid #0075FF;
     background-color: #FFFFFF;
 }
-
-.radio-flex .radio .radio-input {
-    position: relative;
-    left: -25px;
-}
-
 
 
 .checkbox-flex .checkbox label {
@@ -70,19 +63,28 @@ body {
     transition: transform 0.5s, color 0.5s;
 }
 
-.checkbox label {
+.radio-flex .radio .radio-input {
+    position: relative;
+    left: -25px;
+    top: -5px;
+    transform: translateY(-50%);
+    transition: transform 0.5s, color 0.5s;
+}
+
+.checkbox label, .radio label {
     margin: 0;
     overflow: hidden;
     height: 100%;
     position: relative;
 }
 
-.checkbox label span {
+.checkbox label span, .radio label span {
     position: relative;
     z-index: 10;
 }
 
-.checkbox > div:hover .checkbox-input {
+.checkbox > div:hover .checkbox-input,
+.radio > div:hover .radio-input{
     transform: translateY(-50%) scale(1.5);
 }
 
@@ -90,12 +92,9 @@ select {
     cursor: pointer;
 }
 
-
-
 .super-background {
     position: absolute;
     transition: top 0.3s, left 0.3s;
-    transform: rotate(-7deg);
     background: #0075FF;
     top: 150%;
     left: -50%;
@@ -103,14 +102,8 @@ select {
     height: 200%;
 }
 
-.checkbox > div:hover .super-background {
+.checkbox> div:hover .super-background, .radio> div:hover .super-background {
     top: -50%;
-}
-
-.checkbox-flex {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
 }
 
 .checkbox-flex p {
@@ -122,12 +115,6 @@ select {
     margin-bottom: .5rem;
     display: flex;
     line-height: initial;
-}
-
-
-
-.margin-bottom {
-    margin-bottom: 5px;
 }
 
 .form > div {
@@ -155,7 +142,7 @@ select {
 
 .text-field, .text-field input,
 .final-submit, .date-field,
-.dropdown {
+.dropdown, label .option {
     width: 100%;
     text-align: center;
 }
@@ -167,3 +154,7 @@ div .hardcoded-checkbox {
 .dropdown p {
     align-self: center;
 }
+
+
+
+
