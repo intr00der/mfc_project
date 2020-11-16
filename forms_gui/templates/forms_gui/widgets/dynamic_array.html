@@ -1,0 +1,19 @@
+{% spaceless %}
+<div class="dynamic-array-widget">
+  <ul>
+    {% for widget in widget.subwidgets %}
+      <li class="array-item">{% include widget.template_name %}</li>
+    {% endfor %}
+  </ul>
+  <div class="submit-row" style="text-align:left">
+    <input type="button"
+           class="add-array-item _addanother"
+           value="Добавить еще одну опцию"
+           style="padding-bottom:27px"
+    >
+    <p class="deletelink-box">
+      <a href="#" class="deletelink remove-array-item">Удалить последнюю опцию</a>
+    </p>
+  </div>
+</div>
+{% endspaceless %}

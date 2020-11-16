@@ -1,5 +1,13 @@
-from django.db import models
+import os
+
+from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
+from django.core.files.storage import FileSystemStorage
+from django.db import models, transaction
+from django.db.models import JSONField
 from mptt.models import MPTTModel, TreeForeignKey
+
+from conf.settings import USER_REQUESTS_ROOT, USER_REQUESTS_URL
 
 
 class FormField(models.Model):
@@ -11,16 +19,13 @@ class FormField(models.Model):
 
     title = models.CharField('Название поля', max_length=255)
     type = models.CharField('Тип поля', max_length=31, choices=FORM_TYPE_CHOICES)
-    data = models.TextField('Тело формы', blank=True, null=True)  # Для radio, dropdown
+    data = ArrayField(models.CharField(max_length=31), blank=True, null=True)
     details = models.CharField('Поясняющий текст', max_length=255, blank=True, null=True)
     required = models.BooleanField('Обязательное ли поле', default=False)
 
     class Meta:
         verbose_name = 'Поле справки'
         verbose_name_plural = 'Поля справок'
-
-    def data_as_list(self):
-        return str(self.data).split('\n')
 
     def __str__(self):
         return self.title
@@ -65,3 +70,34 @@ class FormButton(MPTTModel):
 
     def __str__(self):
         return self.title or ''
+
+
+user_requests_storage = FileSystemStorage(location=USER_REQUESTS_ROOT, base_url=USER_REQUESTS_URL)
+
+
+class UsersRequest(models.Model):
+    data = JSONField('Данные пользователя')
+    form_body = models.ForeignKey(FormBody, on_delete=models.SET_NULL, related_name='users_request', null=True)
+    pdf_file = models.FileField("Файл пользовательского запроса", blank=True, null=True, storage=user_requests_storage)
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True, blank=False)
+    number = models.PositiveIntegerField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Запрос пользователя'
+        verbose_name_plural = 'Запросы пользователя'
+
+    def identify_request_number(self):
+        with transaction.atomic():
+            user_requests = UsersRequest.objects.select_for_update().filter(form_body_id=self.form_body_id)
+            try:
+                latest_user_request = user_requests.latest('created_at')
+            except self.DoesNotExist:
+                number = 1
+            else:
+                number = latest_user_request.number + 1
+        return number
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.number = self.identify_request_number()
+        super().save(*args, **kwargs)

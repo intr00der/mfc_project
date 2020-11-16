@@ -3,7 +3,7 @@ body {
 }
 
 
-.button-title {
+.button-title, .form-body-title {
     font-weight: bold;
     padding: 10px;
     text-align: center;
@@ -11,22 +11,150 @@ body {
 }
 
 .btn-toolbar .btn {
-    margin-left: auto;
-    margin-right: auto;
 
 }
 
-.btn-primary {
+.btn-primary, .btn-success {
     text-align: center;
-    border-radius: 25px;
-    padding: 10px 300px;
-    margin: auto;
+    border-radius: 10px;
+    min-width: 50%;
     font-size: 20px;
+    margin-bottom: 50px;
 
 }
 
 .btn-toolbar {
     padding: 10px;
-
+    justify-content: center;
 }
+
+
+
+.radio-flex, .checkbox-flex {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.radio-flex .radio label {
+    padding: 5px 30px 5px 10px;
+    background: #DDD;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #0075FF;
+    background-color: #FFFFFF;
+}
+
+
+.checkbox-flex .checkbox label {
+    padding: 5px 10px 5px 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 0;
+    border: 1px solid #0075FF;
+}
+
+.checkbox-flex .checkbox .checkbox-input {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.5s, color 0.5s;
+}
+
+.radio-flex .radio .radio-input {
+    position: relative;
+    left: -25px;
+    top: -5px;
+    transform: translateY(-50%);
+    transition: transform 0.5s, color 0.5s;
+}
+
+.checkbox label, .radio label {
+    margin: 0;
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+}
+
+.checkbox label span, .radio label span {
+    position: relative;
+    z-index: 10;
+}
+
+.checkbox > div:hover .checkbox-input,
+.radio > div:hover .radio-input{
+    transform: translateY(-50%) scale(1.5);
+}
+
+select {
+    cursor: pointer;
+}
+
+.super-background {
+    position: absolute;
+    transition: top 0.3s, left 0.3s;
+    background: #0075FF;
+    top: 150%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+}
+
+.checkbox> div:hover .super-background, .radio> div:hover .super-background {
+    top: -50%;
+}
+
+.checkbox-flex p {
+    align-self: center;
+}
+
+.checkbox {
+    position: relative;
+    margin-bottom: .5rem;
+    display: flex;
+    line-height: initial;
+}
+
+.form > div {
+    margin-bottom: 40px;
+}
+
+
+.form {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+.h2 {
+    text-align: center;
+}
+
+.h5 {
+    margin-bottom: 10px;
+}
+
+
+.text-field, .text-field input,
+.final-submit, .date-field,
+.dropdown, label .option {
+    width: 100%;
+    text-align: center;
+}
+
+div .hardcoded-checkbox {
+    margin-bottom: 15px; !important
+}
+
+.dropdown p {
+    align-self: center;
+}
+
+
+
 

@@ -1,6 +1,7 @@
  .vagrant
 .idea
 .git
+user_requests
 todo.txt
 db.sqlite3
 .venv
@@ -27,3 +28,4 @@ static/uploads
 media/
 .python-version
 .env
+/user_requests/

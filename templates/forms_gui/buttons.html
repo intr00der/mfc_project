@@ -3,20 +3,32 @@
 {% block title %} {{ button_title }} {% endblock %}
 
 {% block content %}
+
 	<div class="container">
 		<p class="h2 button-title">
 			{{button_title}}
 		</p>
 	</div>
-
-    {% for button in buttons %}
-	<div class="btn-toolbar">
-		{% if button.children.all %}
-			<a class="btn btn-primary" href="{% url 'form-button' button.id %}">{{ button.title }}</a>
-		{% else %}
-			<a class="btn btn-primary" href="{% url 'form-body' form_id=button.form_body.id button_id=button.id %}">{{ button.form_body.title }}</a>
+		{% if form_bodies %}
+			{% for form_body in form_bodies %}
+				<div class="btn-toolbar">
+					<a class="btn btn-primary" href="{% url 'form-body' form_id=form_body.id %}">{{ form_body.title }}</a>
+				</div>
+			{% endfor %}
+		{% elif buttons %}
+			{% for button in buttons %}
+				{% if button.children.all %}
+					<div class="btn-toolbar">
+						<a class="btn btn-primary" href="{% url 'form-button' button.id %}">{{ button.title }}</a>
+					</div>
+				{% else %}
+					<div class="btn-toolbar">
+						<a class="btn btn-primary" href="{% url 'form-body' form_id=button.form_body.id %}">
+							{{ button.form_body.title }}
+						</a>
+					</div>
+				{% endif %}
+			{% endfor %}
 		{% endif %}
-	</div>
-	{% endfor %}
 
 {% endblock %}
