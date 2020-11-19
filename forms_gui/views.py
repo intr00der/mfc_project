@@ -115,6 +115,7 @@ class FormBodyView(ListView):
             'encoding': "UTF-8"
         }
         pdf_filename = f'{form_body.title}_{users_request.number}.pdf'
+
         msg_output_path = os.path.join(settings.USER_REQUESTS_TEMPORARY_ROOT, pdf_filename)
         pdfkit.from_string(html, msg_output_path, options=options, configuration=config)
 
@@ -133,6 +134,7 @@ class FormBodyView(ListView):
         return HttpResponseRedirect(reverse('success'))
 
     @staticmethod
+
     def prepare_form_data(data):
         data = dict(data)
         del data['consent']
