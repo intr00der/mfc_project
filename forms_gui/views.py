@@ -68,40 +68,53 @@ class FormBodyView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['form_body_title'] = FormBody.objects.get(pk=self.kwargs['form_id']).title
+        #context['form_body_title'] = FormBody.objects.get(pk=self.kwargs['form_id']).title
         return context
 
+    @staticmethod
+    def validate_form_data(form_data, form_body):
+        error_msg = None
+        dom_changed_msg = 'Не меняйте код элемента'
+        field_options = {str(field.id): field.options for field in form_body.form_fields.all()}
+
+        required_field_ids = set(map(str, form_body.form_fields.filter(required=True).values_list('id', flat=True)))
+
+        is_valid = True
+        # Валидация
+        for field_id, field_values in form_data.items():
+            if field_id in required_field_ids:
+                if not field_values:
+                    is_valid = False
+                    error_msg = dom_changed_msg
+                    break
+
+            if field_options[field_id]:
+                for value in field_values:
+                    if value not in field_options[field_id]:
+                        is_valid = False
+                        error_msg = dom_changed_msg
+                        break
+                if not is_valid:
+                    break
+        return is_valid, error_msg
+
     def post(self, request, *args, **kwargs):
-        data = self.prepare_post_data(request.POST)
-        form = FormBody.objects.get(pk=self.kwargs['form_id'])
+        form_data = self.prepare_form_data(request.POST)
+        form_body = FormBody.objects.get(pk=self.kwargs['form_id'])
 
-        required_fields = set(map(str, form.form_fields.filter(required=True).values_list('id', flat=True)))
-        data_item_list = list(data.items())
-        for obj in data_item_list:
-            key = obj[0]
-            values_list = obj[1]
-            model_ref = FormField.objects.get(pk=obj[0])
+        is_valid, error_msg = self.validate_form_data(form_data, form_body)
+        if not is_valid:
+            return HttpResponseBadRequest(error_msg)
 
-            if key in required_fields:
-                if not values_list:
-                    return HttpResponseBadRequest(
-                        'Не меняйте код элементов (снятие свойства необходимости заполнения форм)')
-
-            if model_ref.data:
-                for value in values_list:
-                    if value not in model_ref.data:
-                        return HttpResponseBadRequest('Не меняйте код элементов (подмена значения)')
-                    value.replace(value, f'{model_ref.title}: {value}')
-
-        users_request = UsersRequest.objects.create(data=json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False),
+        users_request = UsersRequest.objects.create(data=json.dumps(form_data, sort_keys=True, indent=2, ensure_ascii=False),
                                                     form_body_id=kwargs['form_id'])
         template = get_template('forms_gui/invoice.html')
-        html = template.render({'data': data})
+        html = template.render({'data': form_data, 'body': str(form_body)})
         config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
         options = {
             'encoding': "UTF-8"
         }
-        pdf_filename = f'{form.title}_{users_request.number}.pdf'
+        pdf_filename = f'{form_body.title}_{users_request.number}.pdf'
         msg_output_path = os.path.join(settings.USER_REQUESTS_TEMPORARY_ROOT, pdf_filename)
         pdfkit.from_string(html, msg_output_path, options=options, configuration=config)
 
@@ -120,12 +133,12 @@ class FormBodyView(ListView):
         return HttpResponseRedirect(reverse('success'))
 
     @staticmethod
-    def prepare_post_data(data):
+    def prepare_form_data(data):
         data = dict(data)
         del data['consent']
         del data['approval']
         del data['csrfmiddlewaretoken']
-        return {key: value for key, value in data.items()}
+        return data
 
 
 def success_page(request):
